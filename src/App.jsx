@@ -13,6 +13,7 @@ import Bookmarks from './pages/Bookmarks'
 import FAQ from './pages/FAQ'
 import Profile from './pages/Profile'
 import ResetPassword from './pages/ResetPassword'
+import Signup from './pages/Signup'
 
 // Admin Pages
 import AdminDashboard from './pages/AdminDashboard'
@@ -50,6 +51,7 @@ function App() {
       />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         
         <Route element={<Layout />}>

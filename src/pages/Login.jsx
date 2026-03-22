@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogIn, AtSign, Loader2, Sparkles, AlertCircle } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { signInWithRollNumber } from '../services/auth'
 import { useAuthStore, useThemeStore } from '../store/store'
 import toast from 'react-hot-toast'
@@ -165,7 +165,10 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="mt-8 pt-8 border-t border-white/5 text-center">
+        <div className="mt-8 pt-8 border-t border-white/5 text-center space-y-4">
+          <p className={`text-sm opacity-60 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            New to the portal? <Link to="/signup" className="text-primary font-bold hover:underline">Create Account</Link>
+          </p>
           <p className={`text-sm opacity-60 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Trouble logging in? Contact campus admin.
           </p>

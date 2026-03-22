@@ -42,6 +42,38 @@ export const updatePassword = async (newPassword) => {
   return data
 }
 
+export const signUpWithRollNumber = async (name, rollNumber, password) => {
+  const email = `${rollNumber.toLowerCase()}@${DOMAIN}`
+  
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        name,
+        roll_number: rollNumber
+      }
+    }
+  })
+
+  if (error) throw error
+
+  // Create or update public user profile
+  const { error: profileError } = await supabase
+    .from('users')
+    .upsert([{
+      id: data.user.id,
+      name,
+      roll_number: rollNumber,
+      role: 'user',
+      needs_reset: false
+    }], { onConflict: 'roll_number' })
+
+  if (profileError) throw profileError
+
+  return { user: data.user }
+}
+
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut()
   if (error) throw error
