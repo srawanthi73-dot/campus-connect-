@@ -7,8 +7,8 @@ const Layout = () => {
   const { darkMode } = useThemeStore()
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode ? 'bg-black text-white' : 'bg-[#F9FAFB] text-gray-900'
+    <div className={`min-h-screen border-none bg-transparent transition-colors duration-300 ${
+      darkMode ? 'text-white' : 'text-gray-900'
     }`}>
       <Navbar />
       

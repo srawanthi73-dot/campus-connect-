@@ -45,7 +45,7 @@ const Login = () => {
 
   return (
     <div className={`min-h-screen flex items-center justify-center relative p-4 transition-colors duration-500 ${
-      darkMode ? 'bg-black text-white' : 'bg-[#f0f2f5] text-gray-900'
+      darkMode ? 'text-white' : 'text-gray-900'
     }`}>
       {/* Background Decor */}
       <div className={`absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none -z-10`}>

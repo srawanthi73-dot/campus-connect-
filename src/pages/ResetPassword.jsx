@@ -36,7 +36,7 @@ const ResetPassword = () => {
 
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-colors ${
-      darkMode ? 'bg-black text-white' : 'bg-gray-100 text-gray-900'
+      darkMode ? 'text-white' : 'text-gray-900'
     }`}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
