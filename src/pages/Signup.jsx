@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 const Signup = () => {
   const [name, setName] = useState('')
   const [rollNumber, setRollNumber] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -29,7 +30,7 @@ const Signup = () => {
     }
 
     try {
-      await signUpWithRollNumber(name, rollNumber, password)
+      await signUpWithRollNumber(name, rollNumber, email, password)
       
       toast.success('Registration successful! Please login.')
       navigate('/login')
@@ -129,6 +130,29 @@ const Signup = () => {
                 value={rollNumber}
                 onChange={(e) => setRollNumber(e.target.value)}
                 placeholder="21XXXXXX" 
+                required
+                className={`w-full h-14 pl-12 pr-4 rounded-2xl outline-none transition-all font-bold uppercase ${
+                  darkMode 
+                  ? 'bg-black/40 border border-white/10 focus:border-primary/50 text-white placeholder:text-gray-600' 
+                  : 'bg-gray-50 border border-gray-200 focus:border-black/50 text-black placeholder:text-gray-400'
+                }`}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5 md:col-span-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 pl-2">Mail Identity (Real Email)</label>
+            <div className="relative flex items-center group">
+              <span className={`absolute left-4 transition-colors group-focus-within:text-primary ${
+                darkMode ? 'text-gray-400' : 'text-gray-400'
+              }`}>
+                <AtSign size={18} />
+              </span>
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="charan@gmail.com" 
                 required
                 className={`w-full h-14 pl-12 pr-4 rounded-2xl outline-none transition-all font-bold uppercase ${
                   darkMode 

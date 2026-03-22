@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LogIn, AtSign, Loader2, Sparkles, AlertCircle } from 'lucide-react'
+import { LogIn, AtSign, Loader2, Sparkles, AlertCircle, User } from 'lucide-react'
 import { useNavigate, Link } from 'react-router-dom'
 import { signInWithRollNumber } from '../services/auth'
 import { useAuthStore, useThemeStore } from '../store/store'
 import toast from 'react-hot-toast'
 
 const Login = () => {
-  const [rollNumber, setRollNumber] = useState('')
+  const [loginMode, setLoginMode] = useState('student') // 'student' or 'admin'
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -22,7 +23,13 @@ const Login = () => {
     setError(null)
 
     try {
-      const { user, profile } = await signInWithRollNumber(rollNumber, password)
+      // Map 'admin@123' to a highly secure internal email that Supabase will never reject
+      let loginEmail = email
+      if (loginMode === 'admin' && email === 'admin@123') {
+        loginEmail = 'masteradmin@campus.edu'
+      }
+
+      const { user, profile } = await signInWithRollNumber(loginEmail, password)
       
       setUser(user)
       setRole(profile.role)
@@ -36,7 +43,7 @@ const Login = () => {
       }
     } catch (err) {
       console.error('Login error:', err)
-      setError(err.message || 'Invalid roll number or password')
+      setError(err.message || 'Invalid credentials or password')
       toast.error('Check your credentials and try again')
     } finally {
       setIsLoading(false)
@@ -61,67 +68,86 @@ const Login = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, type: 'spring' }}
-        className={`w-full max-w-md p-8 rounded-3xl relative backdrop-blur-3xl overflow-hidden border ${
-          darkMode ? 'bg-white/5 border-white/10' : 'bg-white/80 border-gray-200 shadow-2xl shadow-blue-500/10'
+        className={`w-full max-w-md p-8 rounded-[40px] relative backdrop-blur-3xl overflow-hidden border ${
+          darkMode ? 'bg-white/5 border-white/10' : 'bg-white/90 border-gray-100 shadow-2xl'
         }`}
       >
-        {/* Glow Effect Top Left */}
-        {darkMode && (
-          <div className="absolute top-0 left-0 w-32 h-32 bg-primary/20 hover:bg-primary/30 rounded-full blur-[50px] -ml-16 -mt-16 transition-all" />
-        )}
-
         <div className="relative z-10 text-center mb-8">
-          <div className={`inline-flex items-center justify-center p-4 rounded-2xl mb-4 transition-all ${
-            darkMode ? 'bg-primary/10 text-primary border border-primary/20 shadow-neon' : 'bg-black text-white'
+          <div className={`inline-flex items-center justify-center p-4 rounded-3xl mb-4 transition-all ${
+            darkMode ? 'bg-primary/10 text-primary border border-primary/20 shadow-neon' : 'bg-primary text-primary-foreground'
           }`}>
             <LogIn size={32} />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome Back</h1>
-          <p className={darkMode ? 'text-gray-400' : 'text-gray-500 text-sm'}>
-            Login to access your campus portal
+          <h1 className="text-4xl font-extrabold tracking-tighter mb-2 italic">CAMPUS PORTAL</h1>
+          <p className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Select access node to initialize session
           </p>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className={`flex p-1 rounded-2xl mb-8 ${darkMode ? 'bg-black/40' : 'bg-gray-100'}`}>
+          <button 
+            onClick={() => { setLoginMode('student'); setError(null); }}
+            className={`flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
+              loginMode === 'student' 
+                ? (darkMode ? 'bg-primary text-black shadow-neon' : 'bg-white text-primary shadow-sm')
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Student
+          </button>
+          <button 
+            onClick={() => { setLoginMode('admin'); setError(null); }}
+            className={`flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
+              loginMode === 'admin' 
+                ? (darkMode ? 'bg-primary text-black shadow-neon' : 'bg-white text-primary shadow-sm')
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Admin Forge
+          </button>
         </div>
 
         {error && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
-            className="flex items-center gap-2 mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm"
+            className="flex items-center gap-2 mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-bold"
           >
             <AlertCircle size={16} />
             <span>{error}</span>
           </motion.div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider pl-1 font-outfit opacity-70">
-              Roll Number
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 ml-1">
+              {loginMode === 'student' ? 'Mail Identity' : 'Admin Username'}
             </label>
             <div className="relative flex items-center group">
               <span className={`absolute left-4 transition-colors group-focus-within:text-primary ${
                 darkMode ? 'text-gray-500' : 'text-gray-400'
               }`}>
-                <AtSign size={18} />
+                {loginMode === 'student' ? <AtSign size={18} /> : <User size={18} />}
               </span>
               <input 
-                type="text" 
-                value={rollNumber}
-                onChange={(e) => setRollNumber(e.target.value)}
-                placeholder="21XXXXXX" 
+                type={loginMode === 'student' ? 'email' : 'text'} 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={loginMode === 'student' ? 'charan@gmail.com' : 'Enter Admin ID'} 
                 required
-                className={`w-full h-14 pl-12 pr-4 rounded-2xl outline-none transition-all placeholder:font-light font-medium focus:ring-2 ${
+                className={`w-full h-14 pl-12 pr-4 rounded-2xl outline-none transition-all font-bold tracking-tight ${
                   darkMode 
-                  ? 'bg-black/50 border border-white/10 focus:border-primary/50 focus:ring-primary/20 text-white placeholder:text-gray-600' 
-                  : 'bg-gray-50 border border-gray-200 focus:border-black/50 focus:ring-black/5 focus:bg-white text-black placeholder:text-gray-400'
+                  ? 'bg-black/50 border border-white/10 focus:border-primary/50 text-white placeholder:text-gray-700' 
+                  : 'bg-white border border-gray-200 focus:border-primary/50 text-black placeholder:text-gray-300 shadow-sm'
                 }`}
               />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider pl-1 font-outfit opacity-70">
-              Password
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 ml-1">
+              Access Key
             </label>
             <div className="relative flex items-center group">
               <span className={`absolute left-4 transition-colors group-focus-within:text-primary ${
@@ -135,10 +161,10 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••" 
                 required
-                className={`w-full h-14 pl-12 pr-4 rounded-2xl outline-none transition-all placeholder:font-light font-medium focus:ring-2 ${
+                className={`w-full h-14 pl-12 pr-4 rounded-2xl outline-none transition-all font-bold tracking-tight ${
                   darkMode 
-                  ? 'bg-black/50 border border-white/10 focus:border-primary/50 focus:ring-primary/20 text-white placeholder:text-gray-600' 
-                  : 'bg-gray-50 border border-gray-200 focus:border-black/50 focus:ring-black/5 focus:bg-white text-black placeholder:text-gray-400'
+                  ? 'bg-black/50 border border-white/10 focus:border-primary/50 text-white placeholder:text-gray-700' 
+                  : 'bg-white border border-gray-200 focus:border-primary/50 text-black placeholder:text-gray-300 shadow-sm'
                 }`}
               />
             </div>
@@ -147,30 +173,26 @@ const Login = () => {
           <button 
             type="submit" 
             disabled={isLoading}
-            className={`w-full h-14 mt-4 rounded-2xl font-bold transition-all relative overflow-hidden group hover:scale-[1.02] active:scale-[0.98] ${
-              darkMode ? 'bg-primary text-black hover:shadow-neon' : 'bg-black text-white hover:shadow-lg'
+            className={`w-full h-14 mt-4 rounded-2xl font-black uppercase tracking-widest transition-all relative overflow-hidden group active:scale-95 ${
+              darkMode ? 'bg-primary text-black hover:shadow-neon' : 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
                 <Loader2 className="animate-spin" size={20} />
-                <span>Processing...</span>
+                <span>Initializing...</span>
               </div>
             ) : (
-              <span>Continue Portal</span>
+              <span>Deploy Session</span>
             )}
             
-            {/* Hover Shine Animation */}
-            <div className="absolute top-0 -left-1/4 w-1/4 h-full bg-white/20 skew-x-12 transition-all duration-500 group-hover:left-[125%]" />
+            <div className="absolute top-0 -left-1/2 w-1/2 h-full bg-white/20 skew-x-12 transition-all duration-700 group-hover:left-[150%]" />
           </button>
         </form>
 
-        <div className="mt-8 pt-8 border-t border-white/5 text-center space-y-4">
-          <p className={`text-sm opacity-60 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            New to the portal? <Link to="/signup" className="text-primary font-bold hover:underline">Create Account</Link>
-          </p>
-          <p className={`text-sm opacity-60 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Trouble logging in? Contact campus admin.
+        <div className="mt-10 pt-8 border-t border-white/5 text-center space-y-4">
+          <p className={`text-xs font-bold tracking-tight ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            New student member? <Link to="/signup" className="text-primary hover:underline italic">Initialize Profile</Link>
           </p>
         </div>
       </motion.div>

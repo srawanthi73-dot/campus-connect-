@@ -1,16 +1,24 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Outfit:wght@100..900&display=swap');
 
 @theme {
-  --color-primary: #DFFF00;
+  /* Default Primary: Deep Sapphire for Light Mode */
+  --color-primary: #0f172a;
+  --color-primary-foreground: #ffffff;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui;
+  --font-outfit: "Outfit", sans-serif;
+  --shadow-neon: 0 0 20px rgba(230, 255, 0, 0.4);
+  
   --color-dark-bg: #050505;
   --color-dark-surface: #121212;
   --color-dark-border: rgba(255, 255, 255, 0.1);
   --color-glass: rgba(255, 255, 255, 0.05);
-  
-  --font-outfit: "Outfit", sans-serif;
-  
-  --shadow-neon: 0 0 10px rgba(223, 255, 0, 0.5), 0 0 20px rgba(223, 255, 0, 0.3);
-  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.dark {
+  /* Neon Yellow for Dark Mode */
+  --color-primary: #e6ff00;
+  --color-primary-foreground: #000000;
 }
 
 @layer base {

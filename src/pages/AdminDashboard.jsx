@@ -18,10 +18,11 @@ const AdminDashboard = () => {
   ]
 
   const quickActions = [
-    { name: 'Post New Event', icon: Plus, path: '/admin/events', color: 'bg-primary' },
-    { name: 'Import Students', icon: UserPlus, path: '/admin/users', color: 'bg-blue-500' },
-    { name: 'Answer Questions', icon: HelpCircle, path: '/admin/faq', color: 'bg-orange-500' },
-    { name: 'Download Reports', icon: FileText, path: '/admin/registrations', color: 'bg-purple-500' },
+    { name: 'Post the event', icon: Plus, path: '/admin/events', color: 'bg-primary' },
+    { name: 'Delete the event', icon: Sparkles, path: '/admin/events', color: 'bg-red-500' },
+    { name: 'Number of users registered for the event', icon: ClipboardList, path: '/admin/registrations', color: 'bg-purple-500' },
+    { name: 'Add the members', icon: UserPlus, path: '/admin/users', color: 'bg-blue-500' },
+    { name: 'Remove the members', icon: Users, path: '/admin/users', color: 'bg-orange-500' },
   ]
 
   return (

@@ -2,24 +2,60 @@ import { supabase } from './supabase'
 
 const DOMAIN = 'campus.connect'
 
-export const signInWithRollNumber = async (rollNumber, password) => {
-  const email = `${rollNumber.toLowerCase()}@${DOMAIN}`
-  
-  const { data, error } = await supabase.auth.signInWithPassword({
+export const signInWithRollNumber = async (email, password) => {
+  let { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
 
-  if (error) throw error
+  // 🚀 Auto-create your Master Admin if it doesn't exist yet!
+  if (error && email === 'masteradmin@campus.edu' && error.message.includes('Invalid login credentials')) {
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name: 'Master Admin', roll_number: `MASTER_${Math.floor(Math.random() * 10000)}` }
+      }
+    })
+    
+    if (!signUpError && signUpData?.user) {
+      error = null; // Clear local error
+      data = signUpData; // Use new session
+      
+      // Enforce the Admin Role directly into your database
+      await supabase.from('users').update({ role: 'admin' }).eq('id', data.user.id);
+    } else {
+      throw signUpError || error;
+    }
+  } else if (error) {
+    throw error;
+  }
 
   // Get user profile to check role and reset status
-  const { data: profile, error: profileError } = await supabase
+  let { data: profile, error: profileError } = await supabase
     .from('users')
     .select('*')
     .eq('id', data.user.id)
-    .single()
+    .maybeSingle()
 
-  if (profileError) throw profileError
+  if (!profile) {
+    // Auto-create missing profile record
+    const { data: newProfile, error: createError } = await supabase
+      .from('users')
+      .insert([{
+        id: data.user.id,
+        name: data.user.user_metadata?.name || 'New Student',
+        roll_number: data.user.user_metadata?.roll_number || 'EXT-000',
+        email: data.user.email,
+        role: 'user',
+        needs_reset: false
+      }])
+      .select()
+      .single()
+    
+    if (createError) throw createError
+    profile = newProfile
+  }
 
   return { user: data.user, profile }
 }
@@ -42,9 +78,7 @@ export const updatePassword = async (newPassword) => {
   return data
 }
 
-export const signUpWithRollNumber = async (name, rollNumber, password) => {
-  const email = `${rollNumber.toLowerCase()}@${DOMAIN}`
-  
+export const signUpWithRollNumber = async (name, rollNumber, email, password) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,

@@ -80,14 +80,6 @@ const Home = () => {
               >
                 Explore Events <ChevronRight size={20} />
               </button>
-              <button 
-                onClick={() => navigate('/admin/events')}
-                className={`px-8 py-4 rounded-2xl font-bold flex items-center gap-2 border transition-all hover:bg-white/10 group ${
-                  darkMode ? 'border-white/20 text-white' : 'border-white/40 text-white'
-                }`}
-              >
-                <Plus size={20} className="group-hover:rotate-90 transition-transform" /> Post Event
-              </button>
             </div>
           </motion.div>
         </div>
