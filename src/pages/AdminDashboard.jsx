@@ -134,28 +134,28 @@ const AdminDashboard = () => {
       </div>
 
       {/* Quick Actions & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-8 space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-8 space-y-6">
            <div className="flex items-center justify-between px-2">
               <h3 className="text-2xl font-black uppercase tracking-tighter italic">Operation Shortcuts</h3>
               <Sparkles size={20} className="text-primary animate-pulse" />
            </div>
-           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {quickActions.map((action) => (
                 <Link 
                   key={action.name}
                   to={action.path}
-                  className={`p-1 group rounded-[40px] overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                  className={`p-1 group rounded-[32px] overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] ${
                     darkMode ? 'bg-white/5' : 'bg-gray-100'
                   }`}
                 >
-                   <div className={`p-8 h-full rounded-[40px] border transition-all flex flex-col items-center justify-center text-center gap-4 ${
+                   <div className={`p-5 h-full rounded-[32px] border transition-all flex flex-col items-center justify-center text-center gap-3 ${
                      darkMode ? 'bg-zinc-900 border-white/5 group-hover:border-primary group-hover:shadow-neon' : 'bg-white border-gray-200 hover:border-black shadow-sm'
                    }`}>
-                      <div className={`p-5 rounded-3xl ${action.color} text-white shadow-lg group-hover:scale-110 transition-transform`}>
-                         <action.icon size={32} />
+                      <div className={`p-4 rounded-3xl ${action.color} text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                         <action.icon size={24} />
                       </div>
-                      <h4 className="font-bold text-xl tracking-tight uppercase italic">{action.name}</h4>
+                      <h4 className="font-bold text-base tracking-tight uppercase italic line-clamp-2">{action.name}</h4>
                       <p className="text-[10px] font-black uppercase tracking-widest opacity-50">System Link <ArrowUpRight size={10} className="inline ml-1" /></p>
                    </div>
                 </Link>
@@ -163,9 +163,9 @@ const AdminDashboard = () => {
            </div>
         </div>
 
-        <div className="lg:col-span-4 space-y-8">
+        <div className="lg:col-span-4 space-y-6">
            <h3 className="text-2xl font-black uppercase tracking-tighter italic px-2">Audit Logs</h3>
-           <div className={`p-8 rounded-[40px] border h-full max-h-[500px] overflow-y-auto custom-scrollbar ${
+           <div className={`p-6 rounded-[32px] border h-full max-h-[400px] overflow-y-auto custom-scrollbar ${
              darkMode ? 'bg-zinc-900/40 border-white/10 glass-dark' : 'bg-white border-gray-100 shadow-xl'
            }`}>
              <div className="space-y-8">
