@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   User, Calendar, Bookmark, Settings, LogOut, 
   ChevronRight, KeyRound, Mail, GraduationCap, 
-  Trash2, ShieldCheck, ExternalLink, Loader2
+  Trash2, ShieldCheck, ExternalLink, Loader2,
+  Ticket
 } from 'lucide-react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore, useThemeStore } from '../store/store'
 import { supabase } from '../services/supabase'
 import toast from 'react-hot-toast'
+import TicketModal from '../components/TicketModal'
 
 const Profile = () => {
   const { user, role, logout } = useAuthStore()
@@ -18,6 +20,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('registrations')
   const [registrations, setRegistrations] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedTicket, setSelectedTicket] = useState(null)
 
   useEffect(() => {
     if (!user) {
@@ -179,9 +182,19 @@ const Profile = () => {
                                         <h4 className="font-bold text-lg leading-tight line-clamp-1">{reg.events?.title}</h4>
                                         <p className="text-xs text-gray-500 font-medium">Joined {new Date(reg.created_at).toLocaleDateString()}</p>
                                      </div>
-                                     <Link to={`/event/${reg.events?.id}`} className="p-3 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-black transition-all">
-                                        <ExternalLink size={18} />
-                                     </Link>
+                                     <div className="flex gap-2">
+                                       <button 
+                                          onClick={() => setSelectedTicket(reg)}
+                                          className={`p-3 rounded-xl transition-all border ${
+                                            darkMode ? 'bg-primary/20 border-primary/20 text-primary hover:shadow-neon' : 'bg-black text-white'
+                                          }`}
+                                       >
+                                          <Ticket size={18} />
+                                       </button>
+                                       <Link to={`/event/${reg.events?.id}`} className="p-3 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-black transition-all">
+                                          <ExternalLink size={18} />
+                                       </Link>
+                                     </div>
                                   </div>
                                </div>
                             ))}
@@ -272,6 +285,16 @@ const Profile = () => {
                        </div>
                     </div>
                  </motion.div>
+               )}
+            </AnimatePresence>
+            
+            <AnimatePresence>
+               {selectedTicket && (
+                  <TicketModal 
+                    registration={selectedTicket} 
+                    onClose={() => setSelectedTicket(null)} 
+                    darkMode={darkMode}
+                  />
                )}
             </AnimatePresence>
          </div>

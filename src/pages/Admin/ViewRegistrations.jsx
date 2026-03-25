@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ClipboardList, Search, Filter, Download, 
   Trash2, Eye, User, Calendar, GraduationCap, 
-  CheckCircle2, Loader2, X, ChevronRight, FileDown
+  CheckCircle2, Loader2, X, ChevronRight, FileDown,
+  Ticket
 } from 'lucide-react'
 import { supabase } from '../../services/supabase'
 import { useThemeStore } from '../../store/store'
 import * as XLSX from 'xlsx'
 import toast from 'react-hot-toast'
+import { QRCodeCanvas } from 'qrcode.react'
 
 const ViewRegistrations = () => {
   const [registrations, setRegistrations] = useState([])
@@ -200,33 +202,56 @@ const ViewRegistrations = () => {
                    </div>
 
                    <div className="space-y-10 relative z-10">
-                      <div className="grid grid-cols-2 gap-8">
-                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Branch Alignment</label>
-                            <p className="text-2xl font-black italic uppercase italic">{selectedReg.form_data?.branch}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
+                         <div className="md:col-span-2 space-y-10">
+                            <div className="grid grid-cols-2 gap-8 border-b border-white/5 pb-10">
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Branch Alignment</label>
+                                  <p className="text-xl font-black italic uppercase italic">{selectedReg.form_data?.branch}</p>
+                               </div>
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Operational Contact</label>
+                                  <p className="text-xl font-black italic uppercase italic tracking-tighter italic">{selectedReg.form_data?.phone}</p>
+                               </div>
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Roll Identity</label>
+                                  <p className="text-xl font-black italic uppercase italic tracking-tighter italic">{selectedReg.form_data?.roll_number}</p>
+                               </div>
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Subject Cycle</label>
+                                  <p className="text-xl font-black italic uppercase italic tracking-tighter italic">S{selectedReg.form_data?.semester}</p>
+                               </div>
+                            </div>
+
+                            <div className="space-y-2">
+                               <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Subject Objectives / Expectations</label>
+                               <div className={`p-8 rounded-[32px] border leading-relaxed font-outfit italic text-lg ${darkMode ? 'bg-white/[0.02] border-white/5 text-gray-400' : 'bg-gray-50 border-gray-100'}`}>
+                                  "{selectedReg.form_data?.expectations || 'No specific objectives provided by the node.'}"
+                               </div>
+                            </div>
                          </div>
-                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Operational Contact</label>
-                            <p className="text-2xl font-black italic uppercase italic tracking-tighter italic">{selectedReg.form_data?.phone}</p>
+
+                         {/* QR Verification Section */}
+                         <div className={`p-8 rounded-[40px] border flex flex-col items-center justify-center gap-6 ${darkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-100'}`}>
+                            <div className="p-3 bg-white rounded-2xl shadow-xl">
+                               <QRCodeCanvas 
+                                  value={`REG:${selectedReg.id}`} 
+                                  size={140} 
+                                  level="H" 
+                                  includeMargin={true} 
+                               />
+                            </div>
+                            <div className="text-center">
+                               <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Verify Node</p>
+                               <p className="text-[8px] font-mono opacity-30 select-all">{selectedReg.id}</p>
+                            </div>
                          </div>
                       </div>
 
-                      <div className="space-y-2">
-                         <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Subject Objectives / Expectations</label>
-                         <div className={`p-8 rounded-[32px] border leading-relaxed font-outfit italic text-lg ${darkMode ? 'bg-white/[0.02] border-white/5 text-gray-400' : 'bg-gray-50 border-gray-100'}`}>
-                            "{selectedReg.form_data?.expectations || 'No specific objectives provided by the node.'}"
-                         </div>
-                      </div>
-
-                      <div className="flex items-center gap-4 pt-4 border-t border-white/5 justify-center">
+                      <div className="flex items-center gap-4 pt-6 justify-center">
                          <div className="flex flex-col items-center">
                             <div className="text-xl font-black italic uppercase italic tracking-tighter">SUCCESS</div>
                             <div className="text-[10px] font-black uppercase tracking-widest opacity-30 italic">Status</div>
-                         </div>
-                         <div className="w-px h-10 bg-white/10" />
-                         <div className="flex flex-col items-center">
-                            <div className="text-xl font-black italic uppercase italic tracking-tighter">S{selectedReg.form_data?.semester}</div>
-                            <div className="text-[10px] font-black uppercase tracking-widest opacity-30 italic">Cycle</div>
                          </div>
                       </div>
                    </div>

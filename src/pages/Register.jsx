@@ -10,6 +10,8 @@ import { supabase } from '../services/supabase'
 import { useAuthStore, useThemeStore } from '../store/store'
 import toast from 'react-hot-toast'
 
+import { QRCodeCanvas } from 'qrcode.react'
+
 const Register = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -17,6 +19,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [registrationId, setRegistrationId] = useState(null)
   
   const { user } = useAuthStore()
   const { darkMode } = useThemeStore()
@@ -69,16 +72,19 @@ const Register = () => {
     setIsSubmitting(true)
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('registrations')
         .insert([{
           event_id: id,
           user_id: user.id,
           form_data: formData
         }])
+        .select()
+        .single()
 
       if (error) throw error
       
+      setRegistrationId(data.id)
       setIsSuccess(true)
       toast.success('Registration successful!')
     } catch (err) {
@@ -110,9 +116,35 @@ const Register = () => {
         <h1 className="text-4xl font-black uppercase tracking-tight italic">Registration Successful!</h1>
         <p className={`text-lg font-outfit ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
           You've successfully secured your spot for <span className="text-primary font-bold">"{event?.title}"</span>. 
-          Expect a confirmation email shortly with all the details.
         </p>
       </div>
+
+      {/* QR Code Section */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className={`p-8 rounded-[40px] border flex flex-col items-center gap-6 ${
+          darkMode ? 'bg-white/5 border-white/10 glass-dark' : 'bg-gray-50 border-gray-200'
+        }`}
+      >
+        <div className={`p-4 rounded-3xl bg-white ${darkMode ? 'shadow-neon' : 'shadow-xl'}`}>
+          <QRCodeCanvas 
+            value={`REG:${registrationId}`} 
+            size={200}
+            level="H"
+            includeMargin={true}
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-xs font-black uppercase tracking-[0.2em] opacity-60">Your Universal Entry Pass</p>
+          <p className={`text-[10px] font-mono opacity-40 ${darkMode ? 'text-white' : 'text-black'}`}>{registrationId}</p>
+        </div>
+        <p className="text-sm font-medium text-gray-400 max-w-xs">
+          Take a screenshot of this QR code. You'll need it for check-in at the venue.
+        </p>
+      </motion.div>
+
       <div className="flex gap-4 pt-6">
         <button 
           onClick={() => navigate('/')}
