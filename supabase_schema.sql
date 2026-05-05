@@ -75,6 +75,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE POLICY "Public users can view their own profile" ON public.users
   FOR SELECT USING (auth.uid() = id);
 
+CREATE POLICY "Users can insert their own profile" ON public.users
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON public.users
+  FOR UPDATE USING (auth.uid() = id);
+
 CREATE POLICY "Admins can view all users" ON public.users
   FOR SELECT USING (public.is_admin());
 
