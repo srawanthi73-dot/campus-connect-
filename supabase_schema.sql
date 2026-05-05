@@ -118,3 +118,12 @@ CREATE POLICY "Users can manage their own bookmarks" ON public.bookmarks
 -- REALTIME CONFIGURATION
 ALTER PUBLICATION supabase_realtime ADD TABLE public.faq;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.events;
+
+-- STORAGE POLICIES (Assuming bucket 'posters' is created)
+-- Allow anyone to read posters
+CREATE POLICY "Public Poster Access" ON storage.objects FOR SELECT USING (bucket_id = 'posters');
+
+-- Allow admins to upload, update, and delete posters
+CREATE POLICY "Admin Poster Upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'posters' AND public.is_admin());
+CREATE POLICY "Admin Poster Update" ON storage.objects FOR UPDATE USING (bucket_id = 'posters' AND public.is_admin());
+CREATE POLICY "Admin Poster Delete" ON storage.objects FOR DELETE USING (bucket_id = 'posters' AND public.is_admin());
