@@ -46,7 +46,6 @@ export const signInWithRollNumber = async (email, password) => {
         id: data.user.id,
         name: data.user.user_metadata?.name || 'New Student',
         roll_number: data.user.user_metadata?.roll_number || 'EXT-000',
-        email: data.user.email,
         role: 'user',
         needs_reset: false
       }])

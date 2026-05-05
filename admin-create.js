@@ -48,7 +48,6 @@ async function enforceAdmin() {
   console.log("Upgrading to admin...");
   const { error: upsertErr } = await supabaseAdmin.from('users').upsert({
     id: created.user.id,
-    email,
     name: 'Master Admin',
     roll_number: `MASTER-${Date.now()}`,
     role: 'admin',
