@@ -216,22 +216,36 @@ const Scanner = () => {
                          </div>
                       </div>
 
+                      {participant.form_data?.checked_in ? (
+                        <div className={`p-6 rounded-3xl border flex items-center justify-center gap-4 ${
+                          darkMode ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-red-50 border-red-200 text-red-600'
+                        }`}>
+                           <XCircle size={28} />
+                           <div>
+                              <h3 className="font-black uppercase tracking-widest text-lg">Already Scanned</h3>
+                              <p className="text-[10px] uppercase font-bold opacity-60">Entry timestamp: {new Date(participant.form_data.checked_in_at).toLocaleTimeString()}</p>
+                           </div>
+                        </div>
+                      ) : null}
+
                       <div className="flex gap-4">
-                         <button 
-                           onClick={handleCheckIn}
-                           className={`flex-1 py-6 rounded-3xl font-black uppercase text-sm tracking-widest transition-all hover:scale-105 active:scale-95 ${
-                             darkMode ? 'bg-primary text-black hover:shadow-neon' : 'bg-black text-white shadow-xl shadow-blue-500/20'
-                           }`}
-                         >
-                            Confirm Entry
-                         </button>
+                         {!participant.form_data?.checked_in && (
+                           <button 
+                             onClick={handleCheckIn}
+                             className={`flex-1 py-6 rounded-3xl font-black uppercase text-sm tracking-widest transition-all hover:scale-105 active:scale-95 ${
+                               darkMode ? 'bg-primary text-black hover:shadow-neon' : 'bg-black text-white shadow-xl shadow-blue-500/20'
+                             }`}
+                           >
+                              Confirm Entry
+                           </button>
+                         )}
                          <button 
                            onClick={handleReset}
                            className={`p-6 rounded-3xl border transition-all hover:bg-red-500 hover:text-white ${
                              darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-100 border-gray-200 text-black'
-                           }`}
+                           } ${participant.form_data?.checked_in ? 'flex-1' : ''}`}
                          >
-                            <RefreshCw size={24} />
+                            <RefreshCw size={24} className={participant.form_data?.checked_in ? "mx-auto" : ""} />
                          </button>
                       </div>
                    </div>
