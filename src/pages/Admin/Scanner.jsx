@@ -63,7 +63,7 @@ const Scanner = () => {
         .from('registrations')
         .select(`
           *,
-          users (name, roll_number, email),
+          users (name, roll_number),
           events (title, date, venue)
         `)
         .eq('id', id)
