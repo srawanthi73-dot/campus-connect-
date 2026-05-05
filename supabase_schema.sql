@@ -61,23 +61,29 @@ ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bookmarks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faq ENABLE ROW LEVEL SECURITY;
 
+-- Create a Security Definer function to bypass RLS for role checks
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- USERS Table Policies
 CREATE POLICY "Public users can view their own profile" ON public.users
   FOR SELECT USING (auth.uid() = id);
 
 CREATE POLICY "Admins can view all users" ON public.users
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
-  );
+  FOR SELECT USING (public.is_admin());
 
 -- EVENTS Table Policies
 CREATE POLICY "Events are viewable by everyone" ON public.events
   FOR SELECT USING (true);
 
 CREATE POLICY "Only admins can modify events" ON public.events
-  FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
-  );
+  FOR ALL USING (public.is_admin());
 
 -- REGISTRATIONS Table Policies
 CREATE POLICY "Users can view their own registrations" ON public.registrations
@@ -87,9 +93,7 @@ CREATE POLICY "Users can create their own registrations" ON public.registrations
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Admins can view all registrations" ON public.registrations
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
-  );
+  FOR SELECT USING (public.is_admin());
 
 -- FAQ Table Policies
 CREATE POLICY "FAQs are viewable by everyone" ON public.faq
@@ -99,9 +103,7 @@ CREATE POLICY "Users can ask questions" ON public.faq
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Admins can answer and manage FAQs" ON public.faq
-  FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
-  );
+  FOR ALL USING (public.is_admin());
 
 -- BOOKMARKS Table Policies
 CREATE POLICY "Users can manage their own bookmarks" ON public.bookmarks
